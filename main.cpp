@@ -8,31 +8,32 @@ int main(int argc, char** argv) {
 
     VideoCapture cap(0);
 
-    if (cap.isOpened() == false) {
-        cout << "Can't open camera\n";
-        cin.get();
-        return -1; 
-    }
-
-    double dWidth = cap.get(CAP_PROP_FRAME_WIDTH);
-    double dHeight = cap.get(CAP_PROP_FRAME_HEIGHT);
-
-    namedWindow("Camera Feed");
+    
+    CascadeClassifier faceCascade;
+    faceCascade.load("C:\\Users\\sasan\\OneDrive\\Desktop\\Learning\\Open CV\\pose_estimation\\haarcascade_frontalface_default.xml");
 
     while (true) {
         Mat frame;
 
-        bool bSuccess = cap.read(frame);
+        cap.read(frame);
 
-        if (bSuccess = false) {
-            cout << "Camera Disconnected\n";
-            cin.get();
-            break;
+        vector<Rect> faces;
+
+        faceCascade.detectMultiScale(frame, faces, 1.1, 10);
+        
+        if (faces.size() > 0) {
+            for (int i = 0; i < faces.size(); i++) {
+                rectangle(frame, faces[i].tl(), faces[i].br(), Scalar(0, 255, 0), 3);
+                cout << faces[i].area() << ", ";
+
+            }
         }
+
+        cout << "\n";
 
         imshow("Camera Feed", frame);
 
-        if (waitKey(10) == 27) {
+        if (waitKey(10) == 'q') {
             cout << "Esc pressed\n";
             break;
         } 
